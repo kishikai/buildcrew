@@ -1,0 +1,11 @@
+{
+  "name": "build-crew",
+  "owner": { "name": "kishikai" },
+  "plugins": [
+    {
+      "name": "build-crew",
+      "source": "./",
+      "description": "Lead-and-helpers working model plus a live progress tracker page."
+    }
+  ]
+}

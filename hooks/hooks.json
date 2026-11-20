@@ -1,0 +1,12 @@
+{
+  "description": "Adds the build-crew working model to every session.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "cat \"${CLAUDE_PLUGIN_ROOT}/context/working-model.md\"", "timeout": 10 }
+        ]
+      }
+    ]
+  }
+}

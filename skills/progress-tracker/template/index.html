@@ -1,0 +1,266 @@
+<meta name="dash-one-writer">
+<style>
+.bt { display: grid; gap: var(--cds-gap-lg); }
+.bt-head { display: grid; gap: var(--cds-gap-xs); }
+.bt-title { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); text-wrap: balance; }
+.bt-lede { margin: 0; color: var(--color-fg-muted); max-width: 70ch; }
+.bt-lede b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.bt-top { display: grid; gap: var(--cds-gap-lg); grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.bt-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-md); align-content: start; min-width: 0; }
+.bt-h { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.bt-sub { margin: 0; color: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); }
+.bt-big { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2.75rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.bt-strip { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; min-height: 30px; }
+.bt-seg { display: grid; gap: 4px; }
+.bt-seg-bar { height: 10px; border-radius: 3px; background: var(--cds-chart-muted); }
+.bt-seg[data-status="done"] .bt-seg-bar { background: var(--color-ok); }
+.bt-seg[data-status="blocked"] .bt-seg-bar { background: var(--color-bad); }
+.bt-seg-label { font-size: var(--cds-font-size-caption); color: var(--cds-text-secondary); text-align: center; font-variant-numeric: tabular-nums; }
+.bt-now { display: grid; gap: var(--cds-gap-xs); min-height: 3.5em; }
+.bt-now-text { margin: 0; font-size: var(--cds-font-size-heading); text-wrap: pretty; }
+.bt-pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+.bt-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cds-chart-muted); }
+.bt-pill[data-state="running"] .bt-dot, .bt-pill[data-state="active"] .bt-dot { background: var(--color-warn); }
+.bt-pill[data-state="next"] .bt-dot { background: var(--cds-chart-reference); }
+.bt-pill[data-state="done"] .bt-dot { background: var(--color-ok); }
+.bt-pill[data-state="failed"] .bt-dot, .bt-pill[data-state="blocked"] .bt-dot { background: var(--color-bad); }
+@media (prefers-reduced-motion: no-preference) {
+  .bt-pill[data-state="running"] .bt-dot { animation: bt-pulse 1.4s var(--cds-ease-out) infinite; }
+  @keyframes bt-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+}
+.bt-models { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-lg); margin: 0; padding: 0; list-style: none; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.bt-models b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.bt-scroll { overflow-x: auto; }
+.bt-table { width: 100%; border-collapse: collapse; }
+.bt-table th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); padding: 6px 12px 6px 0; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.bt-table td { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+.bt-table tbody tr:last-child td { border-bottom: 0; }
+.bt-nowrap { white-space: nowrap; }
+.bt-muted { color: var(--color-fg-muted); }
+.bt-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; white-space: nowrap; }
+.bt-log { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cds-gap-sm); }
+.bt-log li { display: grid; grid-template-columns: 3.5em minmax(0, 1fr); gap: var(--cds-gap-sm); }
+.bt-log time { color: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; padding-top: 2px; }
+</style>
+
+<div class="bt">
+  <header class="bt-head" id="overview">
+    <h1 class="bt-title">{{PROJECT}} build tracker</h1>
+    <p class="bt-lede">{{UNIT}} <b data-draw="current" data-source="summary" data-field="current" data-row="0">—</b> is <b data-draw="currentStatus" data-source="summary" data-field="currentStatus" data-row="0">—</b>. <b data-draw="done" data-source="summary" data-field="done" data-row="0">—</b> of <b data-draw="total" data-source="summary" data-field="total" data-row="0">—</b> {{units}} are done, and <b data-draw="running" data-source="summary" data-field="running" data-row="0">—</b> <span data-draw="helperNoun">—</span> working right now.</p>
+  </header>
+
+  <div class="bt-top">
+    <section class="bt-card" id="progress">
+      <h2 class="bt-h">Overall progress</h2>
+      <p class="bt-big"><span data-draw="percent" data-source="summary" data-field="percent" data-row="0">—</span>%</p>
+      <p class="bt-sub">{{UNITS}} finished out of the plan</p>
+      <div class="bt-strip" data-draw="strip" data-source="milestones" role="list" aria-label="{{UNIT}} status, one segment each"></div>
+    </section>
+    <section class="bt-card" id="now">
+      <h2 class="bt-h">Working on now</h2>
+      <div class="bt-now" data-draw="now" data-source="log">—</div>
+    </section>
+  </div>
+
+  <section class="bt-card" id="helpers">
+    <h2 class="bt-h">Helpers and models</h2>
+    <ul class="bt-models" data-draw="models" data-source="agents"></ul>
+    <div class="bt-scroll">
+      <table class="bt-table" data-source="agents" data-row-key="id">
+        <thead><tr><th data-field="role">Helper</th><th data-field="model">Model</th><th data-field="task">Task</th><th data-field="status">Status</th><th data-field="started">Time</th><th data-field="landed">Landed in</th><th data-field="result">Result</th></tr></thead>
+        <tbody data-draw="agents"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="bt-card" id="milestones">
+    <h2 class="bt-h">{{UNITS}}</h2>
+    <div class="bt-scroll">
+      <table class="bt-table" data-source="milestones" data-row-key="id">
+        <thead><tr><th data-field="name">{{UNIT}}</th><th data-field="goal">Goal</th><th data-field="status">Status</th><th data-field="commits">Commits</th><th data-field="result">Result</th></tr></thead>
+        <tbody data-draw="milestones"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="bt-card" id="activity">
+    <h2 class="bt-h">Activity</h2>
+    <ol class="bt-log" data-draw="log" data-source="log"></ol>
+    <p class="bt-sub">This page updates by itself as Claude works. Times are in your time zone.</p>
+  </section>
+</div>
+
+<script>
+const fmtTime = d3.timeFormat('%H:%M');
+const minutesSince = (iso) => Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+const duration = (m) => (m < 1 ? 'under a minute' : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`);
+const newestFirst = (a, b) => (a.at === b.at ? (a.id < b.id ? 1 : -1) : a.at < b.at ? 1 : -1);
+const byOrder = (a, b) => Number(a.order) - Number(b.order);
+const STATE_LABEL = { running: 'Running', done: 'Done', failed: 'Failed', active: 'In progress', next: 'Up next', planned: 'Planned', blocked: 'Blocked' };
+
+function pill(state) {
+  const span = document.createElement('span');
+  span.className = 'bt-pill';
+  span.dataset.state = state;
+  const dot = document.createElement('span');
+  dot.className = 'bt-dot';
+  span.append(dot, document.createTextNode(STATE_LABEL[state] || state));
+  return span;
+}
+
+function cell(text, className) {
+  const td = document.createElement('td');
+  if (className) td.className = className;
+  td.textContent = text == null || text === '' ? '—' : String(text);
+  return td;
+}
+
+dash.calc('summary', {
+  inputs: ['milestones', 'agents'],
+  title: 'Build summary',
+  description: 'Milestones done out of the plan, the one in progress or up next, and helpers running now.',
+  fn: (milestones, agents) => {
+    const sorted = milestones.slice().sort((a, b) => Number(a.order) - Number(b.order));
+    const current = sorted.find((m) => m.status === 'active') || sorted.find((m) => m.status === 'next');
+    const done = sorted.filter((m) => m.status === 'done').length;
+    return [{
+      done,
+      total: sorted.length,
+      percent: sorted.length ? Math.round((done / sorted.length) * 100) : 0,
+      running: agents.filter((a) => a.kind === 'helper' && a.status === 'running').length,
+      current: current ? `${current.order}, ${current.name},` : 'none',
+      currentStatus: current ? (current.status === 'active' ? 'in progress' : 'up next') : 'not set',
+    }];
+  },
+});
+
+for (const field of ['current', 'currentStatus', 'done', 'total', 'running', 'percent']) {
+  dash.draw(field, (el) => {
+    const s = dash.data('summary');
+    el.textContent = s.status === 'ok' && s.data && s.data[0] ? String(s.data[0][field]) : '—';
+  });
+}
+
+dash.draw('helperNoun', (el) => {
+  const s = dash.data('summary');
+  el.textContent = s.status === 'ok' && s.data && s.data[0] ? (s.data[0].running === 1 ? 'helper is' : 'helpers are') : '—';
+});
+
+dash.draw('strip', (el) => {
+  const s = dash.data('milestones');
+  if (s.status !== 'ok') { el.textContent = '—'; return; }
+  const rows = s.data.slice().sort(byOrder);
+  el.style.gridTemplateColumns = `repeat(${Math.max(rows.length, 1)}, minmax(0, 1fr))`;
+  el.replaceChildren(...rows.map((row) => {
+    const seg = document.createElement('div');
+    seg.className = 'bt-seg';
+    seg.setAttribute('role', 'listitem');
+    seg.dataset.status = row.status;
+    seg.dataset.source = 'milestones';
+    seg.dataset.field = 'status';
+    seg.dataset.where = 'id=' + encodeURIComponent(row.id);
+    seg.setAttribute('aria-label', `${row.order}, ${row.name}: ${STATE_LABEL[row.status] || row.status}`);
+    const bar = document.createElement('div');
+    bar.className = 'bt-seg-bar';
+    if (row.status === 'active' || row.status === 'next') bar.style.background = dash.colors[0];
+    if (row.status === 'next') bar.style.opacity = '0.4';
+    const label = document.createElement('div');
+    label.className = 'bt-seg-label';
+    label.textContent = String(row.order);
+    seg.append(bar, label);
+    return seg;
+  }));
+});
+
+dash.draw('now', (el) => {
+  const s = dash.data('log');
+  if (s.status !== 'ok' || !s.data.length) { el.textContent = '—'; return; }
+  const latest = s.data.slice().sort(newestFirst)[0];
+  const text = document.createElement('p');
+  text.className = 'bt-now-text';
+  text.dataset.source = 'log';
+  text.dataset.field = 'text';
+  text.dataset.where = 'id=' + encodeURIComponent(latest.id);
+  text.textContent = latest.text;
+  const when = document.createElement('p');
+  when.className = 'bt-sub';
+  const m = minutesSince(latest.at);
+  when.textContent = `${fmtTime(new Date(latest.at))}, ${m < 1 ? 'just now' : duration(m) + ' ago'}`;
+  el.replaceChildren(text, when);
+});
+
+dash.draw('models', (el) => {
+  const s = dash.data('agents');
+  if (s.status !== 'ok') { el.replaceChildren(); return; }
+  const roles = new Map();
+  for (const a of s.data.slice().sort(byOrder)) {
+    if (!a.model) continue;
+    if (!roles.has(a.model)) roles.set(a.model, new Set());
+    roles.get(a.model).add(a.role);
+  }
+  el.replaceChildren(...[...roles].map(([model, set]) => {
+    const li = document.createElement('li');
+    const b = document.createElement('b');
+    b.textContent = model;
+    li.append(b, document.createTextNode(' ' + [...set].join(', ')));
+    return li;
+  }));
+});
+
+function drawAgents(el) {
+  const s = dash.data('agents');
+  if (s.status !== 'ok') { el.replaceChildren(); return; }
+  const rows = s.data.slice().sort((a, b) => {
+    const ra = a.status === 'running', rb = b.status === 'running';
+    return ra !== rb ? (ra ? -1 : 1) : Number(b.order) - Number(a.order);
+  });
+  el.replaceChildren(...rows.map((a) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = a.id;
+    const status = document.createElement('td');
+    status.append(pill(a.status));
+    const time = a.status === 'running' && a.started
+      ? `started ${fmtTime(new Date(a.started))}, ${duration(minutesSince(a.started))} so far`
+      : a.finished ? `finished ${fmtTime(new Date(a.finished))}` : '';
+    tr.append(cell(a.role, 'bt-nowrap'), cell(a.model, 'bt-nowrap'), cell(a.task), status, cell(time, 'bt-muted'), cell(a.landed, 'bt-code'), cell(a.result));
+    return tr;
+  }));
+}
+
+dash.draw('agents', {
+  mount: () => ({ timer: setInterval(() => { dash.draw('agents'); dash.draw('now'); }, 30000) }),
+  update: (el) => drawAgents(el),
+  unmount: (el, made) => clearInterval(made.timer),
+});
+
+dash.draw('milestones', (el) => {
+  const s = dash.data('milestones');
+  if (s.status !== 'ok') { el.replaceChildren(); return; }
+  el.replaceChildren(...s.data.slice().sort(byOrder).map((row) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = row.id;
+    const status = document.createElement('td');
+    status.append(pill(row.status));
+    tr.append(cell(`${row.order}. ${row.name}`, 'bt-nowrap'), cell(row.goal), status, cell(row.commits, 'bt-code'), cell(row.result));
+    return tr;
+  }));
+});
+
+dash.draw('log', (el) => {
+  const s = dash.data('log');
+  if (s.status !== 'ok') { el.replaceChildren(); return; }
+  el.replaceChildren(...s.data.slice().sort(newestFirst).slice(0, 15).map((row) => {
+    const li = document.createElement('li');
+    const t = document.createElement('time');
+    t.dateTime = row.at;
+    t.textContent = fmtTime(new Date(row.at));
+    const text = document.createElement('span');
+    text.dataset.source = 'log';
+    text.dataset.field = 'text';
+    text.dataset.where = 'id=' + encodeURIComponent(row.id);
+    text.textContent = row.text;
+    li.append(t, text);
+    return li;
+  }));
+});
+</script>

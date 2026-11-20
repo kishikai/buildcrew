@@ -1,0 +1,8 @@
+{
+  "name": "build-crew",
+  "version": "1.0.0",
+  "description": "A lead-and-helpers working model (Haiku searcher, Sonnet implementer, reviewed by the main session) and a live progress tracker page for any project.",
+  "author": { "name": "kishikai" },
+  "license": "MIT",
+  "keywords": ["subagents", "model-routing", "orchestration", "progress-tracker"]
+}
