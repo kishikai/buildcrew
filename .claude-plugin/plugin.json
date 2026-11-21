@@ -1,8 +1,11 @@
 {
   "name": "build-crew",
-  "version": "1.0.0",
-  "description": "A lead-and-helpers working model (Haiku searcher, Sonnet implementer, reviewed by the main session) and a live progress tracker page for any project.",
+  "displayName": "Build Crew",
+  "version": "1.0.1",
+  "description": "A Claude Code lead session with read-only search, reviewed implementation helpers, and an optional live progress tracker.",
+  "homepage": "https://github.com/kishikai/buildcrew",
+  "repository": "https://github.com/kishikai/buildcrew",
   "author": { "name": "kishikai" },
   "license": "MIT",
-  "keywords": ["subagents", "model-routing", "orchestration", "progress-tracker"]
+  "keywords": ["claude-code", "agents", "subagents", "orchestration", "progress-tracker"]
 }

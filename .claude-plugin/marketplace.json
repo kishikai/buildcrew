@@ -1,11 +1,12 @@
 {
   "name": "build-crew",
+  "description": "A Claude Code lead session with read-only search, reviewed implementation helpers, and an optional live progress tracker.",
   "owner": { "name": "kishikai" },
   "plugins": [
     {
       "name": "build-crew",
       "source": "./",
-      "description": "Lead-and-helpers working model plus a live progress tracker page."
+      "description": "Read-only search and reviewed implementation helpers, with an optional live progress tracker."
     }
   ]
 }

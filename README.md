@@ -1,91 +1,91 @@
-# build-crew
+# Build Crew
 
-A Claude Code plugin that turns your main session into a lead dev and hands the routine work to two cheaper helpers. It also gives you a live page where you can watch the work happen.
+A Claude Code plugin where the main session leads and reviews the work. A read-only searcher finds code and conventions; an implementer handles scoped coding tasks. An optional progress tracker shows the plan and helper activity.
 
-I built it because staring at a terminal with no idea what's going on gets old fast. Now I keep the tracker open and see which helper is running, which model it's on, and what it's doing.
+[![Plugin version](https://img.shields.io/badge/plugin-1.0.1-blue)](.claude-plugin/plugin.json)
+[![License](https://img.shields.io/github/license/kishikai/buildcrew)](LICENSE)
 
-## What you get
+## How it works
 
-| Part | Job | Model |
+| Component | What it does | Model |
 |---|---|---|
-| Your main session | Plans, makes the hard calls, reviews every helper's work, commits | Whatever you picked for the session |
-| `build-crew:searcher` | Reads the code and answers "where is X" questions. It can't edit anything. | Haiku |
-| `build-crew:implementer` | Builds what it's told to build, writes tests and runs them. It never commits. | Sonnet |
-| `build-crew:progress-tracker` | A skill that creates a live dashboard on claude.ai and keeps it up to date | Your main session |
+| Main session | Plans, makes architecture and security decisions, reviews helper work, and handles commits | Your selected model |
+| `build-crew:searcher` | Finds files, callers, and conventions. It cannot edit files. | `haiku` |
+| `build-crew:implementer` | Implements a scoped task and runs relevant tests. It does not commit. | `sonnet` |
+| `build-crew:progress-tracker` | Creates and updates a live project tracker when Claude's artifact tools are available | Main session |
 
-A start-of-session hook adds the working rules to every session, so there's nothing to paste into `CLAUDE.md`.
+The SessionStart hook adds the working rules from `context/working-model.md` to each Claude Code session. You do not need to copy them into your project's `CLAUDE.md`.
+
+```mermaid
+flowchart LR
+    task[Task] --> lead[Main session plans]
+    lead --> searcher[Searcher reads]
+    lead --> implementer[Implementer changes code]
+    searcher --> review[Main session reviews]
+    implementer --> review
+    review --> commit[Main session commits]
+    lead -. optional .-> tracker[Progress tracker]
+```
 
 ## Install
 
-In Claude Code, add this repo as a plugin source:
+Build Crew runs in Claude Code. Add this repository as a marketplace, then install the plugin:
 
-```
+```text
 /plugin marketplace add kishikai/buildcrew
 ```
 
-Then install the plugin from it:
-
-```
+```text
 /plugin install build-crew@build-crew
 ```
 
-To install from a local copy, such as an unzipped download, point at the folder instead:
+To load a local checkout while developing the plugin, run Claude Code from the parent directory:
 
-```
-/plugin marketplace add ./buildcrew
+```text
+claude --plugin-dir ./buildcrew
 ```
 
-For cloud sessions on claude.ai/code, put this in the environment's setup script:
+For cloud sessions on claude.ai/code, add these commands to the environment setup script:
 
 ```bash
 claude plugin marketplace add kishikai/buildcrew
 claude plugin install build-crew@build-crew --scope user
 ```
 
-## Using it
+Claude Code runs plugin hooks and helper tools with your account's permissions. The session hook reads the plugin's working-model file. The implementer can edit files and run shell commands, so review the instructions and agent definitions before installing.
 
-The helpers get used once a plan is settled. You can also ask for one by name, for example: "have the searcher find every caller of save_message".
+## Use it
 
-For the tracker, say "set up a progress tracker for this project". Claude then:
+Describe the work to the main session. Once the plan is clear, ask it to delegate a code lookup to the searcher or a well-defined implementation task to the implementer. The main session reviews each result before using it.
 
-1. asks what to call a step (sprint, milestone, phase);
-2. creates the page and fills in your plan;
-3. updates it whenever a step or a helper starts or finishes.
+Examples:
 
-The page redraws by itself, so you can leave it open in another tab.
+- `Have the searcher find every caller of save_message and report the tests that cover them.`
+- `Have the implementer add pagination to the activity list using the existing API pattern. Run the relevant tests and report what changed.`
 
-The tracker's link is saved in your project as `.claude/build-tracker.json`. Commit that file if you want sessions elsewhere to keep using the same page.
+To create a tracker, ask `Set up a progress tracker for this project.` The skill asks whether to label steps as sprints, milestones, or phases, then creates a page and updates it as work moves forward. The tracker URL is stored in `.claude/build-tracker.json`; commit that file if you want other sessions to reuse the page.
 
-Two things to know about the tracker:
+The tracker is a claude.ai artifact. It needs Claude Code signed in with a claude.ai account and the artifact tools enabled. The searcher and implementer work without it. A tracker page stays private until you share it from its Share menu.
 
-- It's a claude.ai artifact, so it needs Claude Code signed in with a claude.ai account. Without that the helpers still work; Claude just won't offer the tracker.
-- The page is private until you share it from its Share menu.
+## Configure it
 
-## Changing things
+- Change the model aliases in `agents/searcher.md` and `agents/implementer.md`.
+- Edit `context/working-model.md` to change the rules loaded at session start.
+- Edit `skills/progress-tracker/template/index.html` to change the tracker layout.
+- `skills/progress-tracker/render.py` renders the page as the JSON document sent to the artifact tools.
 
-- **Models:** edit `model:` in `agents/searcher.md` and `agents/implementer.md`. The aliases `haiku` and `sonnet` follow the newest version. A full ID such as `claude-sonnet-5-5` pins one.
-- **Rules:** edit `context/working-model.md`. It's plain text and goes into every session as it is.
-- **Tracker page:** edit `skills/progress-tracker/template/index.html`. `render.py` fills in the project name and your word for a step.
+## Repository layout
 
-## What's in the repo
-
-```
-.claude-plugin/plugin.json        plugin manifest
-.claude-plugin/marketplace.json   lets /plugin install from this repo
-agents/                           searcher (Haiku) and implementer (Sonnet)
-context/working-model.md          the rules added to every session
-hooks/hooks.json                  the start-of-session hook that adds them
-skills/progress-tracker/          tracker skill, page template, render script
+```text
+.claude-plugin/              Plugin and marketplace manifests
+agents/                      Read-only searcher and implementation helper
+context/working-model.md     Rules added to each session
+hooks/hooks.json             SessionStart hook
+skills/progress-tracker/      Tracker instructions, renderer, and page template
 ```
 
-## Contributors
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) to contribute. Build Crew is released under the [MIT License](LICENSE). Created and maintained by [kishikai](https://github.com/kishikai).
 
-See [CONTRIBUTORS.md](CONTRIBUTORS.md).
+## Acknowledgements
 
-## Credits
-
-This README was edited with [humanizer](https://github.com/blader/humanizer) by Siqi Chen ([@blader](https://github.com/blader)), MIT licensed. Its licence notice is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+The README was edited with [humanizer](https://github.com/blader/humanizer). Its attribution and MIT notice are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
