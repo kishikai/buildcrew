@@ -60,8 +60,8 @@ Describe the work to the main session. Once the plan is clear, ask it to delegat
 
 Examples:
 
-- `Have the searcher find every caller of save_message and report the tests that cover them.`
-- `Have the implementer add pagination to the activity list using the existing API pattern. Run the relevant tests and report what changed.`
+- `Have the searcher find where this project validates configuration and report the nearby docs.`
+- `Have the implementer improve the error message for an invalid configuration using the existing pattern. Add and run a focused test, then report what changed.`
 
 To create a tracker, ask `Set up a progress tracker for this project.` The skill asks whether to label steps as sprints, milestones, or phases, then creates a page and updates it as work moves forward. The tracker URL is stored in `.claude/build-tracker.json`; commit that file if you want other sessions to reuse the page.
 
